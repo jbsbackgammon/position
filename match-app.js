@@ -69,7 +69,7 @@ drawAnalysis=function(canvas,it){
   const c=canvas.getContext("2d");
   c.setTransform(canvas.width/594,0,0,canvas.height/420,0,0);
   if(it.type==="cube"){
-    const rows=it.rows.slice(0,3),chosen=cubeActualRow(it),numeric=rows.map(r=>Number(r.equity)),doubledValue=/^Redouble/.test(rows[1]?.action||"")?4:2,decision=cubeDecision(numeric,doubledValue,automaticCube(it)),best=decision.bestIndex,cubeDecisionColor=analysisErrorColor(mistakeValue(it,"double")),cubeBandColor=cubeDecisionColor==="#000"?"#203950":cubeDecisionColor;
+    const rows=it.rows.slice(0,3),chosen=cubeActualRow(it),numeric=rows.map(r=>Number(r.equity)),doubledValue=/^Redouble/.test(rows[1]?.action||"")?4:2,decision=cubeDecision(numeric,doubledValue,automaticCube(it)),best=decision.bestIndex,cubeDecisionColor=analysisErrorColor(mistakeValue(it,"double")),cubeBandColor=cubeDecisionColor==="#000"?"#075fc6":cubeDecisionColor;
     rows.forEach((r,i)=>{
       const {actionsTop}=cubeAnalysisLayout(canvas),top=actionsTop+1+i*45,y=actionsTop+27.5+i*45,sel=i===chosen,loss=Math.abs(Number(r.equity)-decision.bestValue),error=i===best?"":fmt(Number(r.equity)-decision.bestValue),color=analysisErrorColor(loss);
       c.fillStyle="#fff";c.fillRect(0,top,594,45);if(sel&&els.showBand.checked){c.fillStyle=cubeBandColor;c.fillRect(0,top,36,45)}
@@ -87,7 +87,7 @@ drawAnalysis=function(canvas,it){
   const scale=canvas.width/594,logicalHeight=canvas.height/scale,h=100/scale,mainSize=32,detailSize=22;
   c.setTransform(scale,0,0,scale,0,0);c.clearRect(0,0,594,logicalHeight);c.fillStyle="#fff";c.fillRect(0,0,594,logicalHeight);c.textBaseline="middle";
   rows.forEach(({row:r,index},i)=>{
-    const y=i*h,mainY=analysisMainY(canvas,i),subY=analysisSubY(canvas,i),sel=index===chosen,isActual=index===actual,color=analysisErrorColor(r.error),bandColor=color==="#000"?"#203950":color;
+    const y=i*h,mainY=analysisMainY(canvas,i),subY=analysisSubY(canvas,i),sel=index===chosen,isActual=index===actual,color=analysisErrorColor(r.error),bandColor=color==="#000"?"#075fc6":color;
     if(sel&&els.showBand.checked){c.fillStyle=bandColor;c.fillRect(0,y,36,h)}if(isActual&&els.showActual.checked)drawAnalysisMark(c,"✓",mainY);else if(index===best&&els.showBest.checked)drawAnalysisMark(c,"★",mainY);c.fillStyle=color;c.font=`700 ${mainSize}px Arial, Helvetica, sans-serif`;c.textAlign="left";c.fillText(r.action,48,mainY,410);drawMainEquity(c,r.equity,mainY);if(r.error)drawMainEquity(c,r.error,subY);c.font=`400 ${detailSize}px Arial, Helvetica, sans-serif`;if(r.detail)drawProbabilityDetail(c,r.detail,48,subY,color);c.strokeStyle="#9da4aa";c.lineWidth=1/scale;c.beginPath();c.moveTo(0,y+h);c.lineTo(594,y+h);c.stroke();
   });
 }
