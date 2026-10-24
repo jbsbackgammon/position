@@ -1,0 +1,147 @@
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.app {
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100vh;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.app-head {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  border: 1px solid #d4dde6;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.app-head-main {
+  display: flex;
+  min-height: 50px;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #d4dde6;
+}
+
+.app-head-main h1 {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.app-head-actions {
+  display: flex;
+  flex: none;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.app-head .button {
+  font-size: 14px;
+}
+
+.app-head-options {
+  display: flex;
+  min-height: 34px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 22px;
+  padding: 4px 10px;
+  border-bottom: 3px solid #2d587b;
+}
+
+.mark-sample {
+  display: inline-flex;
+  width: 18px;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  font: 700 19px/1 Arial, sans-serif;
+  margin-left: -5px;
+  -webkit-text-stroke: 1px #fff;
+}
+
+.best-mark { color: #d7a91e; }
+.actual-mark { color: #20d13a; }
+
+.option-separator {
+  width: 1px;
+  height: 20px;
+  margin-inline: 2px;
+  background: #cbd3dc;
+}
+
+.event-list {
+  flex: 1;
+  min-height: 0;
+}
+
+.output {
+  display: flex;
+  height: auto;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar {
+  position: static;
+  top: auto;
+  height: auto;
+  min-height: 0;
+}
+
+.preview {
+  min-height: 0;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: scroll;
+}
+
+.position-nav button {
+  font-size: 19px !important;
+}
+
+.message {
+  font-size: 14px;
+}
+
+@media (max-width: 920px) {
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, .8fr) minmax(0, 1.2fr);
+    gap: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .app-head-main {
+    flex-wrap: wrap;
+  }
+
+  .app-head-main h1 {
+    flex: 1 1 180px;
+  }
+
+  .app-head-actions {
+    margin-left: auto;
+  }
+
+  .sidebar {
+    position: static;
+    top: auto;
+    height: auto;
+  }
+
+  .output {
+    height: auto;
+    min-height: 0;
+  }
+}
