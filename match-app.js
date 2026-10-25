@@ -98,7 +98,31 @@ function positionNo(index){return String(index+1).padStart(2,"0")}
 function selectionCorner(i){const n=[...selected].indexOf(i);return n>=0?`<span class="selection-corner" aria-label="選択番号 ${positionNo(n)}"><b>${positionNo(n)}</b></span>`:""}
 function eventButton(e,i){return`<button class="event-button checker ${errorClass(e)} ${selected.has(i)?"active":""}" data-i="${i}" aria-pressed="${selected.has(i)}"><span class="dice-pair">${e.diceValues.map(d=>dieHtml(d,e.side)).join("")}</span><span class="event-main">${esc(e.label)}</span>${selectionCorner(i)}</button>`}
 function actionButton(item,label){const role=/^(?:ダブル|Double|Redouble)$/.test(label)?"double":"response";return`<button class="event-button cube-action-label ${errorClass(item.e,role)} ${selected.has(item.i)?"active":""}" data-i="${item.i}" aria-pressed="${selected.has(item.i)}"><span class="event-main">${label}</span></button>`}
-function turnRows(items){const turns=[],pending={black:null,white:null},inactiveAfterTake={black:false,white:false};for(const item of items){const e=item.e;if(e.type==="cube"){if(e.label!=="ノーダブル"){const other=e.side==="black"?"white":"black",pass=e.label==="ダブル/パス",doubleLabel=e.cubeValue*2>=4?"Redouble":"Double";turns.push({kind:"cubeAction",side:e.side,cube:item,action:doubleLabel},{kind:"cubeResponse",side:other,responseCube:item,action:pass?"Pass":"Take",endsGame:pass});if(!pass)inactiveAfterTake[e.side]=true;pending[e.side]=null}else pending[e.side]=item;continue}if(e.type==="checker"){turns.push({kind:"checker",side:e.side,cube:pending[e.side],checker:item,forceCubeInactive:inactiveAfterTake[e.side]});inactiveAfterTake[e.side]=false;pending[e.side]=null}}for(const side of ["black","white"])if(pending[side])turns.push({kind:"checker",side,cube:pending[side],checker:null,forceCubeInactive:inactiveAfterTake[side]});const firstChecker=turns.find(t=>t.kind==="checker");if(firstChecker)firstChecker.opening=true;const rows=[];let open=null;for(const turn of turns){if(turn.opening&&turn.side==="white"){open={white:turn,inactiveBlack:true};rows.push(open);continue}if(!open||turn.side==="black"||open[turn.side]){open={};rows.push(open)}open[turn.side]=turn;if(turn.endsGame&&turn.side==="black")open.inactiveWhite=true}const last=rows.at(-1);if(last){if(!last.black)last.inactiveBlack=true;if(!last.white)last.inactiveWhite=true}return rows}
+function turnRows(items){
+  const turns=[],pending={black:null,white:null},cubeInactive={black:false,white:false};
+  for(const item of items){
+    const e=item.e;
+    if(e.type==="cube"){
+      if(e.label!=="ノーダブル"){
+        const other=e.side==="black"?"white":"black",pass=e.label==="ダブル/パス",doubleLabel=e.cubeValue*2>=4?"Redouble":"Double";
+        turns.push({kind:"cubeAction",side:e.side,cube:item,action:doubleLabel},{kind:"cubeResponse",side:other,responseCube:item,action:pass?"Pass":"Take",endsGame:pass});
+        if(!pass){cubeInactive[e.side]=true;cubeInactive[other]=false}
+        pending[e.side]=null;
+      }else pending[e.side]=item;
+      continue;
+    }
+    if(e.type==="checker"){
+      turns.push({kind:"checker",side:e.side,cube:pending[e.side],checker:item,forceCubeInactive:cubeInactive[e.side]});
+      pending[e.side]=null;
+    }
+  }
+  for(const side of ["black","white"])if(pending[side])turns.push({kind:"checker",side,cube:pending[side],checker:null,forceCubeInactive:cubeInactive[side]});
+  const firstChecker=turns.find(t=>t.kind==="checker");if(firstChecker)firstChecker.opening=true;
+  const rows=[];let open=null;
+  for(const turn of turns){if(turn.opening&&turn.side==="white"){open={white:turn,inactiveBlack:true};rows.push(open);continue}if(!open||turn.side==="black"||open[turn.side]){open={};rows.push(open)}open[turn.side]=turn;if(turn.endsGame&&turn.side==="black")open.inactiveWhite=true}
+  const last=rows.at(-1);if(last){if(!last.black)last.inactiveBlack=true;if(!last.white)last.inactiveWhite=true}
+  return rows;
+}
 function cubeButton(item,mark=null,forceInactive=false){if(!item)return"";const e=item.e,inactive=mark===null&&(forceInactive||e.cubeOwner==="opponent"),value=mark??(e.label==="ノーダブル"?"":e.cubeValue*2),role=mark===null?"double":"response";return`<button class="cube-choice ${errorClass(e,role)} ${selected.has(item.i)?"active":""} ${inactive?"inactive":""}" data-i="${item.i}" aria-pressed="${selected.has(item.i)}" ${inactive?"disabled aria-disabled=\"true\"":""}><span class="cube-token">${value}</span>${selectionCorner(item.i)}</button>`}
 function renderList(){if(!events.length){els.list.innerHTML='<div class="empty">解析対象がありません</div>';return}const groups=new Map;events.forEach((e,i)=>{const key=`${e.fileName}\u0000${e.game}`;if(!groups.has(key)){const blackScore=e.side==="black"?e.playerScore:e.opponentScore,whiteScore=e.side==="white"?e.playerScore:e.opponentScore;groups.set(key,{game:e.game,blackScore,whiteScore,items:[]})}groups.get(key).items.push({e,i})});const first=events[0],head=`<div class="list-column-headings"><div class="player-heading black-player">${esc(first.player1)}</div><div class="player-heading white-player">${esc(first.player2)}</div></div>`;els.list.innerHTML=head+[...groups.values()].map(g=>`<section class="game-group"><div class="game-title">Game${g.game} : ${g.blackScore} - ${g.whiteScore}</div><div class="game-grid">${turnRows(g.items).map(row=>["black","white"].map(side=>{const turn=row[side],inactive=(row.inactiveBlack&&side==="black")||(row.inactiveWhite&&side==="white"),cube=turn?.responseCube?cubeButton(turn.responseCube,turn.action==="Take"?"T":"P"):turn?cubeButton(turn.cube,null,turn.opening||turn.forceCubeInactive):"",action=turn?.action?actionButton(turn.cube||turn.responseCube,turn.action):turn?.checker?eventButton(turn.checker.e,turn.checker.i):"";return`<div class="cube-cell ${inactive?"inactive-cell":""}">${cube}</div><div class="action-cell ${inactive?"inactive-cell":""}">${action}</div>`}).join("")).join("")}</div></section>`).join("");document.querySelectorAll(".event-button,.cube-choice:not(:disabled)").forEach(b=>b.onclick=()=>selectEvent(+b.dataset.i))}
 function analysisImageHeight(e){return e.type==="checker"?Math.max(1,Math.min(5,e.rows.length))*100:400}
