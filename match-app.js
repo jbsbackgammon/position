@@ -47,7 +47,7 @@ function drawWinRateBar(c,p,top,height,reverseLabels=false){
   const x=18,width=558,clamp=value=>Math.max(0,Math.min(100,Number(value)||0)),black=clamp(p.win),white=clamp(p.lose),blackGammon=Math.min(black,clamp(p.wg)),whiteGammon=Math.min(white,clamp(p.lg)),blackBg=Math.min(blackGammon,clamp(p.wbg)),whiteBg=Math.min(whiteGammon,clamp(p.lbg));
   c.save();c.fillStyle="#000";c.fillRect(x,top,width*black/100,height);c.fillStyle="#fff";c.fillRect(x+width*black/100,top,width*white/100,height);
   c.fillStyle="#B7924B";c.fillRect(x,top,width*blackGammon/100,height);c.fillRect(x+width-width*whiteGammon/100,top,width*whiteGammon/100,height);
-  c.fillStyle="#C58CFF";c.fillRect(x,top,width*blackBg/100,height);c.fillRect(x+width-width*whiteBg/100,top,width*whiteBg/100,height);
+  c.fillStyle="#d82020";c.fillRect(x,top,width*blackBg/100,height);c.fillRect(x+width-width*whiteBg/100,top,width*whiteBg/100,height);
   for(let i=10;i<100;i+=10){c.strokeStyle="#CFCFCF";c.lineWidth=i===50?2:1;c.beginPath();c.moveTo(x+width*i/100,top);c.lineTo(x+width*i/100,top+height);c.stroke()}
   c.strokeStyle="#657077";c.lineWidth=1;c.strokeRect(x+.5,top+.5,width-1,height-1);c.fillStyle="#657077";c.font="400 17px Arial, Helvetica, sans-serif";c.textAlign="center";c.textBaseline="middle";for(const value of[30,50,70])c.fillText(`${reverseLabels?100-value:value}%`,x+width*value/100,top-8);c.fillStyle="#B7924B";const markerX=x+width*black/100;c.beginPath();c.moveTo(markerX-15,top-18);c.lineTo(markerX+15,top-18);c.lineTo(markerX,top);c.closePath();c.fill();c.restore();
 }
