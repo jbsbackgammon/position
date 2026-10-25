@@ -40,7 +40,7 @@ function analysisSubY(canvas,row=0){const scale=canvas.width/594,h=analysisCellH
 function cubeAnalysisLayout(canvas){const rateHeight=analysisCellHeight(canvas),barTop=rateHeight+24,barHeight=26,actionsTop=barTop+barHeight+8;return{rateHeight,barTop,barHeight,actionsTop}}
 function automaticCube(it){return Number(it.matchLength)>0&&Number(it.opponentScore)+Number(it.cubeValue)>=Number(it.matchLength)}
 function drawBestChoice(c,label,right,y){
-  c.fillStyle="#075fc6";c.font="700 32px Arial, Helvetica, sans-serif";c.textAlign="right";c.fillText(String(label||""),right,y);
+  c.fillStyle="#075fc6";c.font="700 32px Arial, Helvetica, sans-serif";c.textAlign="right";const errorRight=ANALYSIS_EQUITY_X+22+c.measureText("0.000").width;c.fillText(String(label||""),errorRight,y);
 }
 function drawWinRateBar(c,p,top,height,reverseLabels=false){
   const x=18,width=558,clamp=value=>Math.max(0,Math.min(100,Number(value)||0)),black=clamp(p.win),white=clamp(p.lose),blackGammon=Math.min(black,clamp(p.wg)),whiteGammon=Math.min(white,clamp(p.lg)),blackBg=Math.min(blackGammon,clamp(p.wbg)),whiteBg=Math.min(whiteGammon,clamp(p.lbg));
